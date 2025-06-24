@@ -1,43 +1,38 @@
 const output = document.getElementById("output");
 
-output.innerHTML = `<tr><td colspan="2">Loading...</td></tr>`
+// Step 1: Show "Loading..." message
+output.innerHTML = `<tr><td colspan="2">Loading...</td></tr>`;
 
-const promise1 = () => 
- new Promise((resolve, reject)=>{
-		setTimeout(()=>{
-			resolve({ name: "Promise 1", time: 2 });
-		}, 2000);
-	});
+// Step 2: Create 3 promises with random delay between 1 and 3 seconds
+const createRandomPromise = (name) => {
+  const delay = (Math.random() * 2 + 1).toFixed(3); // 1 to 3 seconds
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve({ name, time: parseFloat(delay).toFixed(3) });
+    }, delay * 1000);
+  });
+};
 
+const startTime = performance.now();
 
-	const promise2 = () => 
- new Promise((resolve, reject)=>{
-		setTimeout(()=>{
-			resolve({ name: "Promise 2", time: 1 });
-		}, 1000);
-	});
+// Step 3: Run all promises
+Promise.all([
+  createRandomPromise("Promise 1"),
+  createRandomPromise("Promise 2"),
+  createRandomPromise("Promise 3")
+]).then(results => {
+  // Step 4: Clear loading row
+  output.innerHTML = "";
 
-		const promise3 = () => 
- new Promise((resolve, reject)=>{
-		setTimeout(()=>{
-			resolve({ name: "Promise 3", time: 3 });
-		}, 3000);
-	});
+  // Step 5: Add each resolved promise to the table
+  results.forEach(res => {
+    const row = document.createElement("tr");
+    row.innerHTML = `<td>${res.name}</td><td>${res.time}</td>`;
+    output.appendChild(row);
+  });
 
-
-const start = performance.now();
-
-Promise.all([promise1(), promise2(), promise3()]).then(results => {
-  output.innerHTML = ""; 
-
-	results.forEach(res=>{
-		const row = document.createElement("tr");
-		 row.innerHTML = `<td>${res.name}</td><td>${res.time}</td>`;
-         output.appendChild(row);
-	});
-
-	
-const totalTime = ((performance.now() - start) / 1000).toFixed(3);
+  // Step 6: Calculate total time (real elapsed time)
+  const totalTime = ((performance.now() - startTime) / 1000).toFixed(3);
   const totalRow = document.createElement("tr");
   totalRow.innerHTML = `<td><strong>Total</strong></td><td><strong>${totalTime}</strong></td>`;
   output.appendChild(totalRow);
